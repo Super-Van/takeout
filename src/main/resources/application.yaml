@@ -3,7 +3,7 @@ server:
     session:
       timeout: 3600s
   #    context-path: /takeout
-  port: 8080
+  port: 80
 spring:
   datasource:
     druid:
