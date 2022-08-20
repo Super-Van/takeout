@@ -21,7 +21,8 @@ public class CommonController {
         assert filename != null;
         String suffix = filename.substring(filename.lastIndexOf("."));
         String uploadName = UUID.randomUUID().toString() + suffix;
-        file.transferTo(new File("D:\\chaofan\\spring-boot\\upload\\" + uploadName));
+        file.transferTo(new File("/usr/local/upload/" + uploadName));
+//        file.transferTo(new File("D:\\chaofan\\spring-boot\\upload\\" + uploadName));
         return R.success(uploadName);
     }
 
@@ -32,7 +33,8 @@ public class CommonController {
      */
     @GetMapping("/download")
     public ResponseEntity<byte[]> download(@RequestParam("name") String filename) throws IOException {
-        FileInputStream fis = new FileInputStream("D:\\chaofan\\spring-boot\\upload\\" + filename);
+        FileInputStream fis = new FileInputStream("/usr/local/upload/" + filename);
+//        FileInputStream fis = new FileInputStream("D:\\chaofan\\spring-boot\\upload\\" + filename);
         byte[] bytes = new byte[fis.available()];
         fis.read(bytes);
         return new ResponseEntity<>(bytes, new HttpHeaders(), HttpStatus.OK);
