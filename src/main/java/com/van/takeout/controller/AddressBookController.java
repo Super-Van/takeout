@@ -17,8 +17,7 @@ public class AddressBookController {
 
     @PostMapping
     public R<String> save(@RequestBody AddressBook addressBook, HttpSession session) {
-        addressBook.setUserId((Long) session.getAttribute("user"));
-        addressBookService.save(addressBook);
+        addressBookService.saveForUser(addressBook, session.getAttribute("user"));
         return R.success("地址簿保存成功");
     }
 
@@ -39,6 +38,12 @@ public class AddressBookController {
         return R.success(addressBookService.getById(id));
     }
 
+    /**
+     * 删一条地址对有关联的订单有无影响？尽管订单记录中有详细地址字段
+     *
+     * @param ids
+     * @return
+     */
     @DeleteMapping
     public R<String> delete(@RequestParam Long ids) {
         addressBookService.removeById(ids);
@@ -53,6 +58,7 @@ public class AddressBookController {
 
     @GetMapping("/default")
     public R<AddressBook> getDefault(HttpSession session) {
-        return R.success(addressBookService.getByUserIdAndDefault(session.getAttribute("user")));
+        AddressBook addressBook = addressBookService.getByUserIdAndDefault(session.getAttribute("user"));
+        return addressBook == null ? R.error("请指定默认地址") : R.success(addressBook);
     }
 }

@@ -76,7 +76,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, Order> implements Or
     public Page<Order> pageByUserId(int page, int pageSize, Object userId) {
         Page<Order> pageData = new Page<>(page, pageSize);
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Order::getUserId, userId);
+        queryWrapper.eq(Order::getUserId, userId).orderByDesc(Order::getOrderTime);
         return page(pageData, queryWrapper);
     }
 

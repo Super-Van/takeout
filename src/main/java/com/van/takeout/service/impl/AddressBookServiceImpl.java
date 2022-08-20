@@ -37,4 +37,16 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookDao, AddressB
         queryWrapper.eq(AddressBook::getUserId, userId).eq(AddressBook::getIsDefault, 1);
         return getOne(queryWrapper);
     }
+
+    @Override
+    public void saveForUser(AddressBook addressBook, Object userId) {
+        addressBook.setUserId((Long) userId);
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getUserId, userId);
+        //若该用户尚无地址，则此第一个地址为默认地址
+        if (count(queryWrapper) == 0) {
+            addressBook.setIsDefault(1);
+        }
+        save(addressBook);
+    }
 }

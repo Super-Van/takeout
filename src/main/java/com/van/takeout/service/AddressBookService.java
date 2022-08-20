@@ -11,4 +11,6 @@ public interface AddressBookService extends IService<AddressBook> {
     void setDefault(AddressBook addressBook, Object userId);
 
     AddressBook getByUserIdAndDefault(Object userId);
+
+    void saveForUser(AddressBook addressBook, Object userId);
 }
