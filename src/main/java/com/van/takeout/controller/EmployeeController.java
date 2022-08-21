@@ -102,7 +102,7 @@ public class EmployeeController {
         Long empId = (Long) session.getAttribute("employee");
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(empId);
-        //前端已经把状态改好了
+        //前端已经把状态改好了 话说管理员能禁用自己吗，前端允许了
         employeeService.updateById(employee);
         //尚在线的员工要强制下线，移除session，怎么搞？
         return R.success("员工状态修改成功");
