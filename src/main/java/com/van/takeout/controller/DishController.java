@@ -11,6 +11,7 @@ import com.van.takeout.util.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,10 +26,14 @@ public class DishController {
     private DishFlavorService dishFlavorService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping
     public R<String> saveWithFlavor(@RequestBody DishDto dishDto) {
         dishService.saveWithFlavor(dishDto);
+        //删除redis中的菜品数据
+        dishService.deleteRedis(dishDto);
         return R.success("菜品添加成功");
     }
 
@@ -58,6 +63,8 @@ public class DishController {
     @PutMapping
     public R<String> updateWithFlavor(@RequestBody DishDto dishDto) {
         dishService.updateWithFlavor(dishDto);
+        //删除redis中的菜品数据
+        dishService.deleteRedis(dishDto);
         return R.success("菜品修改成功");
     }
 
@@ -77,6 +84,8 @@ public class DishController {
             return dish;
         }).collect(Collectors.toList());
         dishService.updateBatchById(dishes);
+        //删除redis中的菜品数据
+        dishService.deleteRedis(ids);
         return R.success("菜品" + (status == 1 ? "启售" : "停售") + "成功");
     }
 
@@ -98,6 +107,8 @@ public class DishController {
         dishService.removeByIds(ids);
         //从dish_flavor表删除
         dishFlavorService.deleteByDishIds(ids);
+        //删除redis中的菜品数据
+        dishService.deleteRedis(ids);
         return R.success("菜品删除成功");
     }
 
@@ -112,7 +123,8 @@ public class DishController {
     public R<List<Dish>> list(Dish dish) {
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId()).eq(Dish::getStatus, 1).orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
-        return R.success(dishService.list(queryWrapper));
+        List<Dish> dishes = dishService.list(queryWrapper);
+        return R.success(dishes);
     }
 
     @GetMapping("/list")

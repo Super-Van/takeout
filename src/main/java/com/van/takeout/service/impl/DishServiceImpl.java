@@ -10,6 +10,7 @@ import com.van.takeout.service.DishFlavorService;
 import com.van.takeout.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DishService {
     @Autowired
     private DishFlavorService dishFlavorService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -66,14 +69,50 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DishS
 
     @Override
     public List<DishDto> listWithFlavor(DishDto dishDtoParam) {
+        //从redis查，key或为dish_xxx_1，状态值1带不带无所谓
+        String key = "dish_" + dishDtoParam.getCategoryId();
+        List<DishDto> dishDtos = (List<DishDto>) redisTemplate.opsForValue().get(key);
+        if (dishDtos != null) {
+            return dishDtos;
+        }
+        //查不到再从数据库查
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dishDtoParam.getCategoryId() != null, Dish::getCategoryId, dishDtoParam.getCategoryId()).eq(Dish::getStatus, 1).orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
-        List<DishDto> dishDtos = list(queryWrapper).stream().map(dish -> {
+        dishDtos = list(queryWrapper).stream().map(dish -> {
             DishDto dishDto = new DishDto();
             BeanUtils.copyProperties(dish, dishDto);
             dishDto.setFlavors(dishFlavorService.listByDishId(dish.getId()));
             return dishDto;
         }).collect(Collectors.toList());
+        //存到redis
+        redisTemplate.opsForValue().set(key, dishDtos);
         return dishDtos;
+    }
+
+    /**
+     * 根据分类id清除菜品缓存
+     *
+     * @param dishDto 分类id从中获取
+     */
+    @Override
+    public void deleteRedis(DishDto dishDto) {
+        redisTemplate.delete("dish_" + dishDto.getCategoryId());
+    }
+
+
+    /**
+     * 根据分类id清除菜品缓存
+     *
+     * @param ids
+     */
+    @Override
+    public void deleteRedis(List<Long> ids) {
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Dish::getCategoryId).in(Dish::getId, ids);
+        List<Dish> dishes = list(queryWrapper);
+        //在应用端去重
+        List<Long> categoryIds = dishes.stream().map(Dish::getCategoryId).distinct().collect(Collectors.toList());
+        List<String> keys = categoryIds.stream().map(categoryId -> "dish_" + categoryId).collect(Collectors.toList());
+        redisTemplate.delete(keys);
     }
 }
