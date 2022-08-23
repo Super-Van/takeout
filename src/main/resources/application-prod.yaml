@@ -1,0 +1,4 @@
+uploadPath: "/usr/local/upload/"
+spring:
+  redis:
+    password: root@123456
