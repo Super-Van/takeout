@@ -12,6 +12,8 @@ import com.van.takeout.util.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class SetmealController {
     private CategoryService categoryService;
 
     @PostMapping
+    @CacheEvict(value = "setmealCache", key = "'setmeal' + '_' + #setmealDto.categoryId")
     public R<String> save(@RequestBody SetmealDto setmealDto) {
         //插入到setmeal表
         setmealService.save(setmealDto);
@@ -71,12 +74,14 @@ public class SetmealController {
     }
 
     @PutMapping
+    @CacheEvict(value = "setmealCache", key = "'setmeal' + '_' + #setmealDto.categoryId")
     public R<String> updateWithDish(@RequestBody SetmealDto setmealDto) {
         setmealService.updateWithDish(setmealDto);
         return R.success("套餐修改成功");
     }
 
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache", allEntries = true) //删除spring-cache的redis里的套餐数据，可惜不能按分类id细粒度删
     public R<String> updateStatus(@PathVariable("status") int status, @RequestParam List<Long> ids) {
         List<Setmeal> setmeals = ids.stream().map(id -> {
             Setmeal setmeal = new Setmeal();
@@ -89,12 +94,14 @@ public class SetmealController {
     }
 
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> deleteWithDish(@RequestParam List<Long> ids) {
         setmealService.deleteWithDish(ids);
         return R.success("套餐删除成功");
     }
 
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "'setmeal' + '_' + #setmeal.categoryId", condition = "#result != null")
     public R<List<Setmeal>> list(Setmeal setmeal) {
         return R.success(setmealService.listByCategoryIdAndStatus(setmeal.getCategoryId(), 1));
     }
