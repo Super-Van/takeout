@@ -25,16 +25,13 @@ public class WebMvcConfig {
                         "/dish/**",
                         "/setmeal/**",
                         "/category/**",
-                        "/order/page",//所有用户的订单
-                        "/backend/page/**",
-                        "/backend/index.html"
+                        "/order/page"//所有用户的订单
+                        //前后端分离，拦截静态资源请求没意义了，让前端Axios去拦
                 ).excludePathPatterns(
-                        "/employee/login",
-                        "/backend/page/login/login.html"
+                        "/employee/login"
                 );
                 registry.addInterceptor(new LogoutInterceptor()).addPathPatterns("/employee/logout");
                 registry.addInterceptor(new RepeatLoginInterceptor()).addPathPatterns("/employee/login");
-                //前后端分离，拦截静态资源请求没意义了，让前端Axios去拦
                 registry.addInterceptor(new UserLoginInterceptor()).addPathPatterns(
                         "/user/**",
                         "/addressBook/**",
