@@ -16,6 +16,12 @@
     </properties>
 
     <dependencies>
+        <!--swagger-knife4j-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.2</version>
+        </dependency>
         <!--spring-cache-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

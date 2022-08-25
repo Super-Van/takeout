@@ -3,6 +3,10 @@ package com.van.takeout.controller;
 import com.van.takeout.entity.AddressBook;
 import com.van.takeout.service.AddressBookService;
 import com.van.takeout.util.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +15,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/addressBook")
+@Api(tags = "地址簿接口")
 public class AddressBookController {
     @Autowired
     private AddressBookService addressBookService;
 
+    @ApiOperation("新增地址")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "addressBook", value = "新增的地址模型", required = true)
+    })
     @PostMapping
     public R<String> save(@RequestBody AddressBook addressBook, HttpSession session) {
         addressBookService.saveForUser(addressBook, session.getAttribute("user"));
