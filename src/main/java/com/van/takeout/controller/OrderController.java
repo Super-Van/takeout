@@ -2,6 +2,7 @@ package com.van.takeout.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.van.takeout.entity.Order;
+import com.van.takeout.entity.OrderDto;
 import com.van.takeout.service.OrderService;
 import com.van.takeout.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class OrderController {
     }
 
     @GetMapping("/userPage")
-    public R<Page<Order>> userPage(@RequestParam int page, @RequestParam int pageSize, HttpSession session) {
+    public R<Page<OrderDto>> userPage(@RequestParam int page, @RequestParam int pageSize, HttpSession session) {
         return R.success(orderService.pageByUserId(page, pageSize, session.getAttribute("user")));
     }
 

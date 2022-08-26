@@ -73,11 +73,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, Order> implements Or
     }
 
     @Override
-    public Page<Order> pageByUserId(int page, int pageSize, Object userId) {
-        Page<Order> pageData = new Page<>(page, pageSize);
+    public Page<OrderDto> pageByUserId(int page, int pageSize, Object userId) {
+        Page<Order> orderPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Order::getUserId, userId).orderByDesc(Order::getOrderTime);
-        return page(pageData, queryWrapper);
+        LambdaQueryWrapper<OrderDetail> orderDetailQuery = new LambdaQueryWrapper<>();
+        List<OrderDto> orderDtos = page(orderPage, queryWrapper).getRecords().stream().map(order -> {
+            OrderDto orderDto = new OrderDto();
+            BeanUtils.copyProperties(order, orderDto);
+            orderDetailQuery.eq(OrderDetail::getOrderId, order.getId());
+            orderDto.setOrderDetails(orderDetailService.list(orderDetailQuery));
+            return orderDto;
+        }).collect(Collectors.toList());
+        Page<OrderDto> orderDtoPage = new Page<>();
+        BeanUtils.copyProperties(orderPage, orderDtoPage, "records");
+        orderDtoPage.setRecords(orderDtos);
+        return orderDtoPage;
     }
 
     @Override

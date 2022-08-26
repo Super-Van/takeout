@@ -11,7 +11,6 @@ import com.van.takeout.util.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +25,6 @@ public class DishController {
     private DishFlavorService dishFlavorService;
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @PostMapping
     public R<String> saveWithFlavor(@RequestBody DishDto dishDto) {
@@ -91,6 +88,7 @@ public class DishController {
 
     /**
      * 单品或批量的删除
+     * 考虑删除菜品或套餐会对订单记录的生成产生影响， 跟地址簿删除同理，是不是弄个回收站菜品表，生成订单过程中若菜品查出来是空，就去查回收站
      *
      * @param ids 不带@RequestParam，会同时按名称ids与类型匹配，这里就不匹配，就不映射此方法，带@RequestParam就只按名称匹配，还调用相应类型转换器将String转为List
      * @return
