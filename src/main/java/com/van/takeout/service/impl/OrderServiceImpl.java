@@ -40,11 +40,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, Order> implements Or
         }
         //用户数据
         User user = userService.getById(userId);
-        BeanUtils.copyProperties(user, order);
+        order.setUserId(userId);
         order.setUserName(user.getName());
-        //地址数据
+        //地址数据，若调用copyProperties则注意属性名冲突
         AddressBook addressBook = addressBookService.getById(order.getAddressBookId());
-        BeanUtils.copyProperties(addressBook, order, "phone");
         order.setAddressBookId(order.getAddressBookId());
         order.setAddress(
                 (addressBook.getProvinceName() == null ? "" : addressBook.getProvinceName())
@@ -52,8 +51,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, Order> implements Or
                         + (addressBook.getDistrictName() == null ? "" : addressBook.getDistrictName())
                         + addressBook.getDetail()
         );
+        order.setPhone(addressBook.getPhone());
+        order.setConsignee(addressBook.getConsignee());
         //向订单表插入一条
-        //order.setNumber(Instant.now().toEpochMilli() + userId.toString().substring(userId.toString().length() - 6));//找不到不重复值，暂且用时间戳+用户id后6位
         order.setNumber(String.valueOf(IdWorker.getId()));
         order.setOrderTime(LocalDateTime.now());
         order.setCheckoutTime(LocalDateTime.now());//没有做支付，时间凑一起了
@@ -81,6 +81,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, Order> implements Or
         List<OrderDto> orderDtos = page(orderPage, queryWrapper).getRecords().stream().map(order -> {
             OrderDto orderDto = new OrderDto();
             BeanUtils.copyProperties(order, orderDto);
+            //别忘了清空条件
+            orderDetailQuery.clear();
             orderDetailQuery.eq(OrderDetail::getOrderId, order.getId());
             orderDto.setOrderDetails(orderDetailService.list(orderDetailQuery));
             return orderDto;
