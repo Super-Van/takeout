@@ -43,10 +43,10 @@ public class UserController {
         }
         //生成随机验证码
         Integer code = ValidateCodeUtils.generateValidateCode(4);
-        //手机号作键，验证码作值保存到redis中，1分钟时限
-        redisTemplate.opsForValue().set(phone, code.toString(), 1L, TimeUnit.HOURS);
+        //手机号作键，验证码作值保存到redis中，10分钟时限
+        redisTemplate.opsForValue().set(phone, code.toString(), 10L, TimeUnit.MINUTES);
         //通过QQ邮箱发送验证码
-        mailService.sendMail(from, phone + "@163.com", "验证码为" + code);
+        mailService.sendMail(from, phone + "@163.com", "验证码为" + code + "，10分钟内有效。");
         log.info("验证码：" + code);
         return R.success("验证码成功发送到163邮箱");
     }
