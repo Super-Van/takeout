@@ -58,7 +58,7 @@ public class UserController {
         if (code == null || phone == null || !code.equals(redisTemplate.opsForValue().get(phone))) {
             return R.error("登录失败");
         }
-        //防止同一会话内登录又退出，后使用同一对验证码与手机号
+        //防止验证码有效期内登录又退出，又使用同一对验证码与手机号
         redisTemplate.delete(phone);
         //或是注册或是登录
         User user = userService.loginOrRegister(phone);
