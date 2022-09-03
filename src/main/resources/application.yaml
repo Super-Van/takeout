@@ -11,7 +11,8 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       # 一般不用权利过大的root
       username: van
-      password: 098101
+      # 解析的时候会把0给去掉？导致密码错误
+      password: "098101"
   redis:
     host: localhost
     database: 0
