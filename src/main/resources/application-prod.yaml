@@ -1,4 +1,4 @@
 uploadPath: "/usr/program/upload/"
 spring:
   redis:
-    password: root@123456
+    password: root@098101
