@@ -23,7 +23,7 @@ spring:
     host: smtp.qq.com
     port: 587
     username: chaofan-zhang@qq.com
-    password: lkkpqvtyexnrebjf
+    password: ftfhszcjkqaseacg
     test-connection: false
     properties.mail.smtp.auth: false
     properties.mail.debug: false
