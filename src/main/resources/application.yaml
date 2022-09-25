@@ -25,9 +25,6 @@ spring:
     username: chaofan-zhang@qq.com
     password: ftfhszcjkqaseacg
     test-connection: false
-    properties.mail.smtp.auth: false
-    properties.mail.debug: false
-    properties.mail.mime.splitlongparameters: false
     default-encoding: UTF-8
 mybatis-plus:
   configuration:
