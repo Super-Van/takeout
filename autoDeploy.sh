@@ -20,8 +20,6 @@ if [ $pid ]
 then
     echo "杀死进程"
     kill -9 $pid
-else
-    echo "停止成功"
 fi
 
 echo "从github拉取最新代码"
