@@ -39,7 +39,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealDao, Setmeal> impleme
     @Transactional
     public void deleteWithDish(List<Long> ids) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(Setmeal::getId, ids).eq(Setmeal::getStatus, 1).last("LIMIT 1");
+        queryWrapper.in(Setmeal::getId, ids).eq(Setmeal::getStatus, 1);
         if (count(queryWrapper) != 0) {
             throw new CustomException("启售套餐不可删除");
         }

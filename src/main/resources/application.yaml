@@ -23,7 +23,7 @@ spring:
     host: smtp.qq.com
     port: 587
     username: chaofan-zhang@qq.com
-    password: ftfhszcjkqaseacg
+    password: zvcxlqifxlytdjee
     test-connection: false
     default-encoding: UTF-8
 mybatis-plus:

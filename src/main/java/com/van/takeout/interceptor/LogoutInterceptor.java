@@ -11,6 +11,7 @@ public class LogoutInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (request.getSession().getAttribute("employee") == null) {
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(JSON.toJSONString(R.error("无可退出的员工")));
             return false;
         }

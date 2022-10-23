@@ -34,7 +34,7 @@ public class OrderController {
      * @param page
      * @param pageSize
      * @param number
-     * @param beginTime 类型转换器按照默认的格式进行解析转换，自己须另指定格式
+     * @param beginTime 格式化注解按照默认的格式进行转换，自己须另指定格式
      * @param endTime
      * @return
      */
